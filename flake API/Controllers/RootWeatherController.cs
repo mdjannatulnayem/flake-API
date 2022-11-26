@@ -11,11 +11,14 @@ namespace flake_API.Controllers
 
     public class RootWeatherController : ControllerBase
     {
+        private readonly ApplicationDbContext _dbcontext;
+
         private readonly ILogger<RootWeatherController> _logger;
 
-        public RootWeatherController(ILogger<RootWeatherController> logger)
+        public RootWeatherController(ILogger<RootWeatherController> logger, ApplicationDbContext dbcontext)
         {
             _logger = logger;
+            _dbcontext = dbcontext;
         }
 
         // <<API endpoints>>

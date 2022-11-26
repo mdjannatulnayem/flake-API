@@ -1,4 +1,8 @@
+
 using Serilog;
+using flake_API.Services;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,7 +14,13 @@ Log.Logger = new LoggerConfiguration().MinimumLevel.Information()
 
 builder.Host.UseSerilog();
 
-builder.Services.AddControllers();
+builder.Services.AddDbContext<ApplicationDbContext>(option => {
+    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
+});
+
+builder.Services.AddControllers(option => {
+    //option.ReturnHttpNotAcceptable = true;
+    }).AddXmlDataContractSerializerFormatters();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -36,3 +46,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+// <<No Startup.cs from .NET6>>

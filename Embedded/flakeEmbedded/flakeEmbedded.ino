@@ -84,10 +84,10 @@ void loop()
     const size_t capacity = JSON_OBJECT_SIZE(1);
     StaticJsonDocument<capacity> document;
     JsonObject object = document.to<JsonObject>();
-    object["Time"] = String(datetime.Y) + String("/") + String(datetime.M) + String("/") + String(datetime.D) + String("T") 
-    + String(datetime.h) + String(":") + String(datetime.m) + String(":") + String(datetime.s);
+    object["Time"] = String(datetime.Y) + String("-") + String(datetime.M) + String("-") + String(datetime.D) 
+    + String("T") + String(datetime.h) + String(":") + String(datetime.m) + String(":") + String(datetime.s) + String("+GMT6:00");
     object["Temperature"] = String(temperature);
-    object["Humidity"] = String(temperature);
+    object["Humidity"] = String(humidity);
     object["Pressure"] = String(pressure);
     object["Latitude"] = String(latitude);
     object["Longitude"] = String(longitude);
@@ -109,7 +109,8 @@ void loop()
 }
 
 
-void readSensor(){
+void readSensor()
+{
   humidity = dhtSensor.readHumidity();
   temperature = dhtSensor.readTemperature();
   pressure = bmpSensor.readPressure();
