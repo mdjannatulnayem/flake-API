@@ -47,10 +47,11 @@ public class RootWeatherController : ControllerBase
             _logger.LogError("____Data repository currently empty!");
             return NoContent();
         }
-        var data = _dbcontext.Weather
+        var data = _mapper
+                .Map<WeatherDTOModel>(_dbcontext.Weather
                 .Where(u => u.Location == new LocationModel {
                     State = location
-                }).OrderBy(u => u.Time).LastOrDefault();
+                }).OrderBy(u => u.Time).LastOrDefault());
         return Ok(data);
     }
 
@@ -89,7 +90,12 @@ public class RootWeatherController : ControllerBase
                 {
                     State = location
                 }).ToList().GetRange(x - count, count);
-        return Ok(data);
+        List<WeatherDTOModel> list = new();
+        foreach(WeatherDataModel model in data)
+        {
+            list.Add(_mapper.Map<WeatherDTOModel>(model));
+        }
+        return Ok(list);
     }
 
 
@@ -121,7 +127,12 @@ public class RootWeatherController : ControllerBase
                     State = location
                 })
                 .Where(u => u.Time >= date || u.Time < date.AddDays(1)).ToList();
-        return Ok(data);
+        List<WeatherDTOModel> list = new();
+        foreach (WeatherDataModel model in data)
+        {
+            list.Add(_mapper.Map<WeatherDTOModel>(model));
+        }
+        return Ok(list);
     }
 
 
@@ -151,8 +162,13 @@ public class RootWeatherController : ControllerBase
                 {
                     State = location
                 })
-                .Where(u => u.Time == DateTime.Today).ToList();
-        return Ok(data);
+                .Where(u => u.Time >= DateTime.Today).ToList();
+        List<WeatherDTOModel> list = new();
+        foreach (WeatherDataModel model in data)
+        {
+            list.Add(_mapper.Map<WeatherDTOModel>(model));
+        }
+        return Ok(list);
     }
 
 
