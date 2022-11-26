@@ -1,14 +1,13 @@
 ﻿using flake_API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace flake_API.Services
-{
-    public class ApplicationDbContext : DbContext
-    {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
-            : base(options){}
+namespace flake_API.Services;
 
-        public DbSet<LocationModel> Location { get; set; }
-        public DbSet<WeatherDataModel> Weather { get; set; }
-    }
+public class ApplicationDbContext : DbContext
+{
+    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) 
+        : base(options){}
+
+    public DbSet<LocationModel> Location { get; set; }
+    public DbSet<WeatherDataModel> Weather { get; set; }
 }

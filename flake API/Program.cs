@@ -1,8 +1,9 @@
+// <<flake weather service>>
 
-using Serilog;
+using flake_API;
 using flake_API.Services;
 using Microsoft.EntityFrameworkCore;
-
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,8 @@ builder.Services.AddControllers(option => {
     }).AddXmlDataContractSerializerFormatters();
 
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddAutoMapper(typeof(MappingConfig));
+
 builder.Services.AddSwaggerGen();
 
 // Configure CORS policy
@@ -47,4 +50,4 @@ app.MapControllers();
 
 app.Run();
 
-// <<No Startup.cs from .NET6>>
+// <<flake weather service>>

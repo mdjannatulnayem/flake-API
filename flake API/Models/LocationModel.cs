@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace flake_API.Models
+namespace flake_API.Models;
+
+public class LocationModel
 {
-    public class LocationModel
-    {
-        [Key]
-        public int LocationId { get; set; }
-        [Required]
-        public string? Location { get; set; }
-    }
+    [Key]
+    public int LocationId { get; set; }
+    [Required]
+    public string? Location { get; set; }
 }
