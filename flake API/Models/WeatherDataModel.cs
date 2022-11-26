@@ -11,5 +11,6 @@ public class WeatherDataModel
     public double Pressure { get; set; }
     public double Latitude { get; set; }
     public double Longitude { get; set; }
-    public LocationModel Location { get; set; } = null!;
+    [Required]
+    public LocationModel Location { get; set; }
 }

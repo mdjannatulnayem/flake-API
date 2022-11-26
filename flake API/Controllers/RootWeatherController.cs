@@ -35,22 +35,22 @@ public class RootWeatherController : ControllerBase
     {
         location = location.ToLower();
         var _location = _dbcontext.Location
-                    .Where(u => u.Location == location)
+                    .Where(u => u.State == location)
                     .FirstOrDefault();
         if (_location is null)
         {
             _logger.LogWarning("____Attempted invalid location!");
             return NotFound();
         }
-        if (_dbcontext.Weather.ToList() is null)
+        if (_dbcontext.Weather.ToList().Count == 0)
         {
             _logger.LogError("____Data repository currently empty!");
             return NoContent();
         }
         var data = _dbcontext.Weather
                 .Where(u => u.Location == new LocationModel {
-                    Location = location
-                }).LastOrDefault();
+                    State = location
+                }).OrderBy(u => u.Time).LastOrDefault();
         return Ok(data);
     }
 
@@ -65,14 +65,14 @@ public class RootWeatherController : ControllerBase
     {
         location = location.ToLower();
         var _location = _dbcontext.Location
-                    .Where(u => u.Location == location)
+                    .Where(u => u.State == location)
                     .FirstOrDefault();
         if (_location is null)
         {
             _logger.LogWarning("____Attempted invalid location!");
             return NotFound();
         }
-        if (_dbcontext.Weather.ToList() is null)
+        if (_dbcontext.Weather.ToList().Count == 0)
         {
             _logger.LogError("____Data repository currently empty!");
             return NoContent();
@@ -81,13 +81,13 @@ public class RootWeatherController : ControllerBase
         var x = _dbcontext.Weather
             .Where(u => u.Location == new LocationModel
             {
-                Location = location
-            }).ToList().Count();
+                State = location
+            }).ToList().Count;
         count = count > x ? x % count : count;
         var data = _dbcontext.Weather
                 .Where(u => u.Location == new LocationModel
                 {
-                    Location = location
+                    State = location
                 }).ToList().GetRange(x - count, count);
         return Ok(data);
     }
@@ -102,14 +102,14 @@ public class RootWeatherController : ControllerBase
     {
         location = location.ToLower();
         var _location = _dbcontext.Location
-                    .Where(u => u.Location == location)
+                    .Where(u => u.State == location)
                     .FirstOrDefault();
         if (_location is null)
         {
             _logger.LogWarning("____Attempted invalid location!");
             return NotFound();
         }
-        if (_dbcontext.Weather.ToList() is null)
+        if (_dbcontext.Weather.ToList().Count == 0)
         {
             _logger.LogError("____Data repository currently empty!");
             return NoContent();
@@ -118,7 +118,7 @@ public class RootWeatherController : ControllerBase
         var data = _dbcontext.Weather
                 .Where(u => u.Location == new LocationModel
                 {
-                    Location = location
+                    State = location
                 })
                 .Where(u => u.Time >= date || u.Time < date.AddDays(1)).ToList();
         return Ok(data);
@@ -134,14 +134,14 @@ public class RootWeatherController : ControllerBase
     {
         location = location.ToLower();
         var _location = _dbcontext.Location
-                    .Where(u => u.Location == location)
+                    .Where(u => u.State == location)
                     .FirstOrDefault();
         if (_location is null)
         {
             _logger.LogWarning("____Attempted invalid location!");
             return NotFound();
         }
-        if (_dbcontext.Weather.ToList() is null)
+        if (_dbcontext.Weather.ToList().Count == 0)
         {
             _logger.LogError("____Data repository currently empty!");
             return NoContent();
@@ -149,7 +149,7 @@ public class RootWeatherController : ControllerBase
         var data = _dbcontext.Weather
                 .Where(u => u.Location == new LocationModel
                 {
-                    Location = location
+                    State = location
                 })
                 .Where(u => u.Time == DateTime.Today).ToList();
         return Ok(data);
@@ -164,7 +164,7 @@ public class RootWeatherController : ControllerBase
     {
         location = location.ToLower();
         var _location = _dbcontext.Location
-                    .Where(u => u.Location == location)
+                    .Where(u => u.State == location)
                     .FirstOrDefault();
         if (_location is null)
         {
@@ -173,10 +173,7 @@ public class RootWeatherController : ControllerBase
         }
         if (dataModel is null) return BadRequest(dataModel);
         WeatherDataModel model = _mapper.Map<WeatherDataModel>(dataModel);
-        model.Location = new LocationModel 
-        {
-            Location = location 
-        };
+        model.Location = _location;
         _dbcontext.Weather.Add(model);
         _dbcontext.SaveChanges();
         _logger.LogInformation($"____New entry at {location}.");
@@ -191,14 +188,14 @@ public class RootWeatherController : ControllerBase
     {
         location = location.ToLower();
         var _location = _dbcontext.Location
-                    .Where(u => u.Location == location)
+                    .Where(u => u.State == location)
                     .FirstOrDefault();
         if (_location is null)
         {
             _logger.LogWarning("____Attempted invalid location!");
             return NotFound($"{location} is invalid location!");
         }
-        if (_dbcontext.Weather.ToList() is null)
+        if (_dbcontext.Weather.ToList().Count == 0)
         {
             _logger.LogError("____Data repository currently empty!");
             return NoContent();
@@ -206,11 +203,14 @@ public class RootWeatherController : ControllerBase
         var reference = _dbcontext.Weather
                 .Where(u => u.Location == new LocationModel
                 {
-                    Location = location
-                }).LastOrDefault();
-        if(_dbcontext.Weather.Remove(reference) is not null)
-            _dbcontext.SaveChanges();
-        _logger.LogWarning($"____Last entry from {location} was deleted!");
+                    State = location
+                }).OrderBy(u => u.Time).LastOrDefault();
+        if (reference is not null) 
+        {
+            _dbcontext.Weather.Remove(reference);
+            _logger.LogWarning($"____Last entry from {location} was deleted!");
+        }
+        _dbcontext.SaveChanges();
         return NoContent();
     }
 
