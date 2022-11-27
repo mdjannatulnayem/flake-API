@@ -172,6 +172,7 @@ public class RootWeatherController : ControllerBase
     }
 
 
+    [APIStaticAuth]
     // Post LATEST weather data for a specific location
     [HttpPost("{location}", Name = "StoreNewData")]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -197,6 +198,7 @@ public class RootWeatherController : ControllerBase
     }
 
 
+    [APIStaticAuth]
     [HttpDelete("{location}", Name = "DeleteLastEntry")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

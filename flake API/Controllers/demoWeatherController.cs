@@ -126,6 +126,7 @@ public class demoWeatherController : ControllerBase
     }
 
 
+    [APIStaticAuth]
     // Post LATEST weather data for a specific location
     [HttpPost("{location}",Name = "StoreNewDataDemo")]
     [ProducesResponseType(StatusCodes.Status201Created)]
@@ -145,6 +146,7 @@ public class demoWeatherController : ControllerBase
     }
 
 
+    [APIStaticAuth]
     [HttpDelete("{location}",Name = "DeleteLastEntryDemo")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
