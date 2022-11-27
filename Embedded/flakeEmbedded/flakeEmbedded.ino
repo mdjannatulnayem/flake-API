@@ -1,35 +1,34 @@
+#include <HTTPClient.h>
+#include <ArduinoJson.h>
+#include <WiFi.h>
 #include <DHT.h>
 #include <Adafruit_BMP280.h>
 #include <TinyGPS++.h>
 #include <SoftwareSerial.h>
+#include "appConfiguration.h"
 #define DHTPIN 23
 #define DHTTYPE DHT11
-#include <HTTPClient.h>
-#include <ArduinoJson.h>
-#include <WiFi.h>
-#include "appConfiguration.h"
 
-int sRX = 4,sTX = 3;
+int sRX = 4, sTX = 3;
 uint32_t GPSBaud = 9600;
-double humidity,temperature,pressure,latitude,longitude;
+double humidity, temperature, pressure, latitude, longitude;
+class DateTime{
+public:
+  int Y, M, D, h, m, s;
+};
+DateTime datetime;
+char jsonPayload[128];
 
 TinyGPSPlus gpsSensor;
 DHT dhtSensor(DHTPIN, DHTTYPE);
 Adafruit_BMP280 bmpSensor;
 SoftwareSerial ss(sRX,sTX);
 
-char jsonPayload[128];
 const char* location = _location;
 const char* apiPostEndpoint = _endpoint;
 const char* ssid = _ssid;
 const char* password = _password;
-
-class DateTime{
-public:
-  int Y,M,D,h,m,s;
-};
-
-DateTime datetime;
+const char* apiStaticAuthToken = _token;
 
 void setup() 
 {
@@ -80,6 +79,7 @@ void loop()
   {
     HTTPClient client;
     client.begin(String(apiPostEndpoint) + String(location));
+    client.addHeader("authKey",String(_token));
     client.addHeader("Content-Type","application/json");
     const size_t capacity = JSON_OBJECT_SIZE(1);
     StaticJsonDocument<capacity> document;
