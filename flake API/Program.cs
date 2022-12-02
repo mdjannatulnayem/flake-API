@@ -1,9 +1,9 @@
 // <<flake weather service>>
 
+using Serilog;
+using Microsoft.EntityFrameworkCore;
 using flake_API;
 using flake_API.Services;
-using Microsoft.EntityFrameworkCore;
-using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 

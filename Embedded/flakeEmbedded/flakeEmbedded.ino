@@ -17,7 +17,7 @@ public:
   int Y, M, D, h, m, s;
 };
 DateTime datetime;
-char jsonPayload[128];
+char jsonPayload[256];
 
 TinyGPSPlus gpsSensor;
 DHT dhtSensor(DHTPIN, DHTTYPE);
@@ -32,18 +32,18 @@ const char* apiStaticAuthToken = _token;
 
 void setup() 
 {
-//  Serial.begin(115200); //Using hardware serial!
-//  while (!Serial) delay(100);
+  // Serial.begin(115200); //Using hardware serial!
+  // while (!Serial) delay(100);
   dhtSensor.begin();
   unsigned status = bmpSensor.begin(0x76);
   if (!status) {
-//    Serial.println("Could not find a valid BMP280 sensor, check wiring or try a different address!");
-//    Serial.print("SensorID was: 0x");
-//    Serial.println(bmpSensor.sensorID(),16);
-//    Serial.print("ID of 0xFF probably means a bad address, a BMP 180 or BMP 085\n");
-//    Serial.print("ID of 0x56-0x58 represents a BMP 280,\n");
-//    Serial.print("ID of 0x60 represents a BME 280.\n");
-//    Serial.print("ID of 0x61 represents a BME 680.\n");
+    // Serial.println("Could not find a valid BMP280 sensor, check wiring or try a different address!");
+    // Serial.print("SensorID was: 0x");
+    // Serial.println(bmpSensor.sensorID(),16);
+    // Serial.print("ID of 0xFF probably means a bad address, a BMP 180 or BMP 085\n");
+    // Serial.print("ID of 0x56-0x58 represents a BMP 280,\n");
+    // Serial.print("ID of 0x60 represents a BME 280.\n");
+    // Serial.print("ID of 0x61 represents a BME 680.\n");
     while (1) delay(10);
   }
   /* Default settings from datasheet. */
@@ -55,20 +55,20 @@ void setup()
   
   if (millis() > 5000 && gpsSensor.charsProcessed() < 10)
   {
-//    Serial.println("No GPS detected: check wiring.");
+    // Serial.println("No GPS detected: check wiring.");
     while(true);
   }
   WiFi.begin(ssid,password);
-//  Serial.print("Connecting to WiFi");
+  // Serial.print("Connecting to WiFi");
   
   while(WiFi.status() != WL_CONNECTED){
-//    Serial.print(".");
+    // Serial.print(".");
     delay(500);
   }
 
-//  Serial.println("\nConnected to the network");
-//  Serial.print("IP address: ");
-//  Serial.println(WiFi.localIP());
+  // Serial.println("\nConnected to the network");
+  // Serial.print("IP address: ");
+  // Serial.println(WiFi.localIP());
 }
 
 void loop() 
@@ -81,28 +81,26 @@ void loop()
     client.begin(String(apiPostEndpoint) + String(location));
     client.addHeader("authKey",String(_token));
     client.addHeader("Content-Type","application/json");
-    const size_t capacity = JSON_OBJECT_SIZE(1);
-    StaticJsonDocument<capacity> document;
-    JsonObject object = document.to<JsonObject>();
-    object["Time"] = String(datetime.Y) + String("-") + String(datetime.M) + String("-") + String(datetime.D) 
-    + String("T") + String(datetime.h) + String(":") + String(datetime.m) + String(":") + String(datetime.s) + String("+GMT6:00");
-    object["Temperature"] = String(temperature);
-    object["Humidity"] = String(humidity);
-    object["Pressure"] = String(pressure);
-    object["Latitude"] = String(latitude);
-    object["Longitude"] = String(longitude);
+    DynamicJsonDocument document(256);
+    document["time"] = String(datetime.Y) + String("-") + String(datetime.M) + String("-") + String(datetime.D) 
+    + String("T") + String(datetime.h) + String(":") + String(datetime.m) + String(":") + String(datetime.s);
+    document["temperature"]   = temperature;
+    document["humidity"] = humidity;
+    document["pressure"] = pressure;
+    document["latitude"] = latitude;
+    document["longitude"] = longitude;
     serializeJson(document,jsonPayload);
     int statusCode = client.POST(String(jsonPayload));
     if(statusCode > 0){
-//      String response = client.getString();
-//      Serial.println("\nStatuscode:" + String(statusCode));
-//      Serial.println(response);
+      // String response = client.getString();
+      // Serial.println("\nStatuscode:" + String(statusCode));
+      // Serial.println(response);
       client.end(); // Closes the connection!
     }else{
-//      Serial.println("\nStatuscode:" + String(statusCode));
+      // Serial.println("\nStatuscode:" + String(statusCode));
     }
   }else{
-//    Serial.println("Connection lost!");
+    // Serial.println("Connection lost!");
   }
   
   delay(8000); // 10 second delay between each call!
@@ -133,33 +131,33 @@ void readSensor()
       datetime.s = gpsSensor.time.second();
     }
   }
-//  if(Serial){
-//    Serial.println();
-//    Serial.print("Humidity: ");
-//    Serial.print(humidity);
-//    Serial.println(" %");
-//    Serial.print("Temperature: ");
-//    Serial.print(temperature);
-//    Serial.println(" *C");
-//    Serial.print("Pressure: ");
-//    Serial.print(pressure);
-//    Serial.println(" Pa");
-//    Serial.print("Latitude: ");
-//    Serial.println(latitude);
-//    Serial.print("Longitude: ");
-//    Serial.println(longitude);
-//    Serial.print("Time: ");
-//    Serial.print(datetime.Y);
-//    Serial.print("/");
-//    Serial.print(datetime.M);
-//    Serial.print("/");
-//    Serial.print(datetime.D);
-//    Serial.print("T");
-//    Serial.print(datetime.h);
-//    Serial.print(":");
-//    Serial.print(datetime.m);
-//    Serial.print(":");
-//    Serial.print(datetime.s);
-//    Serial.println();
-//  }
+  // if(Serial){
+  //   Serial.println();
+  //   Serial.print("Humidity: ");
+  //   Serial.print(humidity);
+  //   Serial.println(" %");
+  //   Serial.print("Temperature: ");
+  //   Serial.print(temperature);
+  //   Serial.println(" *C");
+  //   Serial.print("Pressure: ");
+  //   Serial.print(pressure);
+  //   Serial.println(" Pa");
+  //   Serial.print("Latitude: ");
+  //   Serial.println(latitude);
+  //   Serial.print("Longitude: ");
+  //   Serial.println(longitude);
+  //   Serial.print("Time: ");
+  //   Serial.print(datetime.Y);
+  //   Serial.print("/");
+  //   Serial.print(datetime.M);
+  //   Serial.print("/");
+  //   Serial.print(datetime.D);
+  //   Serial.print("T");
+  //   Serial.print(datetime.h);
+  //   Serial.print(":");
+  //   Serial.print(datetime.m);
+  //   Serial.print(":");
+  //   Serial.print(datetime.s);
+  //   Serial.println();
+  // }
 }
